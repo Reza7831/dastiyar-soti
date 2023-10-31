@@ -1,0 +1,73 @@
+import speech_recognition as sr
+import pyautogui as pack
+import screen_brightness_control as sbc
+
+
+wakeUpCall = "سیستم"
+
+
+exit_commands = ['خروج', 'خروج', 'خارج', 'تمام', 'تموم', 'پایان']
+
+prev_commands = ['قبلی', 'قبلیه']
+next_commands = ['بعدی', 'بعدیه']
+
+play_commands = ['پلی', 'پخش']
+stop_commands = ['استاپ', 'استوپ', 'قطع', 'متوقف', 'ببند']
+
+sound_commands = ['صدا', 'آهنگ', 'اهنگ', 'موسیقی']
+sound_mute_commands = ['ببند', 'میوت']
+sound_vol_down = ['کم', 'پایین']
+sound_vol_up = ['بالا', 'زیاد']
+
+bright_commands = ['نور']
+bright_up_commands = ['زیاد', 'بالا']
+bright_down_commands = ['کم', 'پایین']
+
+def voiceRec():
+    r = sr.Recognizer()
+    mic = sr.Microphone(device_index=1)
+    while True:
+        try:
+            with mic as src:
+                audio = r.listen(src)
+                command = r.recognize_google(audio, language='fa-IR').lower()
+                if wakeUpCall in command:
+                    if any(item in command for item in exit_commands):
+                        print('در حال خروج')
+                        break
+                    elif any(item in command for item in prev_commands):
+                        pack.press('prevtrack')
+                        print ('انجام دادم')
+                    elif any(item in command for item in next_commands):
+                        pack.press('nexttrack')
+                        print('انجام دادم')
+                    elif any(item in command for item in play_commands):
+                        pack.press('playpause')
+                        print('انجام دادم')
+                    elif any(item in command for item in stop_commands):
+                        pack.press('playpause')
+                        print('انجام دادم')
+                    elif any(item in command for item in sound_commands):
+                        if any(item in command for item in sound_mute_commands):
+                            pack.press('valumemute')
+                            print("muteing")
+                        elif any(item in command for item in sound_vol_down):
+                            pack.press('valumedown', presses=5)
+                            print("lowring the volume")
+                        elif any(item in command for item in sound_vol_up):
+                            pack.press('valumeup', presses=5)
+                            print("increasing the volume")
+                    elif any(item in command for item in bright_commands):
+                        if any(item in command for item in bright_up_commands):
+                            sbc.set_brightness(90)
+                    elif any(item in command for item in bright_down_commands):
+                            sbc.set_brightness(30)
+                    else:
+                        print('متوجه نشدم 😁')
+        except Exception as e:
+            print(e)
+            r = sr.Recognizer()
+            continue
+
+
+voiceRec()
